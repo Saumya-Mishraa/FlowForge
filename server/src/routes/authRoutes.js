@@ -45,7 +45,7 @@ if (isGoogleOAuthConfigured) {
     (req, res) => {
       const accessToken = signAccessToken(req.user);
       const refreshToken = signRefreshToken(req.user);
-      const clientUrl = process.env.CLIENT_URL || 'http://localhost:5174';
+      const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
       res.redirect(
         `${clientUrl}/oauth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`
       );
