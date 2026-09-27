@@ -19,7 +19,7 @@ const env = {
   googleClientSecret: required('GOOGLE_CLIENT_SECRET', ''),
   googleCallbackUrl: required('GOOGLE_CALLBACK_URL', ''),
 
-  clientUrl: required('CLIENT_URL', 'http://localhost:5173'),
+  clientUrl: required('CLIENT_URL', 'http://localhost:5174'),
 
   executorBlockPrivateNetworks: required('EXECUTOR_BLOCK_PRIVATE_NETWORKS', 'true') === 'true',
   executorTimeoutMs: parseInt(required('EXECUTOR_TIMEOUT_MS', '15000'), 10),
