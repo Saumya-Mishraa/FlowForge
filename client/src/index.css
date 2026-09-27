@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-white text-ink font-sans dark:bg-ink dark:text-white/90;
+  }
+  ::selection {
+    @apply bg-primary-soft text-primary-hover;
+  }
+  *:focus-visible {
+    outline: 2px solid #E91E63;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .ff-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .ff-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #F1DDE4;
+    border-radius: 999px;
+  }
+  .ff-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
