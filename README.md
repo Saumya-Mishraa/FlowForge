@@ -1,375 +1,528 @@
-# FlowForge
+# ⚡ FlowForge
 
-A developer platform for testing REST APIs and visually designing multi-step
-API workflows — request chaining, variable passing, conditional branching,
-and real execution with full logs and step-by-step debugging.
+### Design. Chain. Execute. Debug.
 
-Pink + white, professional SaaS design. **No fake data, no mocked
-responses, no buttons that do nothing.** Every number on the dashboard and
-analytics pages comes from a real MongoDB query; every "Run" and "Send"
-makes a real HTTP call. Where something genuinely isn't implemented (OAuth 2
-token acquisition, public doc sharing, per-hop redirect re-validation), the
-UI or this README says so explicitly rather than faking it — see
-[Known limitations](#11-known-limitations) for the full, honest list.
+**A visual API workflow builder and REST API testing platform.**
 
-## 1. Features
+FlowForge brings API testing and multi-step workflow automation into one workspace. Test REST APIs, chain requests, pass variables between steps, create conditional branches, and debug executions with detailed logs — all through a clean visual interface.
 
-- **Authentication** — email/password (JWT, bcrypt) and Google OAuth
-  (bring your own credentials — [setup below](#7-google-oauth-setup)),
-  forgot/reset password, protected routes, persistent login.
-- **Projects** — the top-level container everything else lives under.
-- **API Tester** — full method support, query params, headers, four auth
-  modes (Bearer/Basic/API Key are fully implemented; OAuth 2 is UI-only —
-  see limitations), JSON (Monaco editor)/raw/urlencoded/form-data bodies,
-  and a **Send** that actually executes the request server-side.
-- **Response Viewer** — status/time/size, Body/Headers/Raw/Preview tabs,
-  copy, in-response search.
-- **Collections** — folders, save/duplicate/rename/delete, save a request
-  straight from the API Tester.
-- **Environments** — per-project variable sets, one active at a time,
-  `{{VARIABLE}}` resolution everywhere a request can use it.
-- **Request History** — every executed request logged with a full
-  request/response snapshot; re-run and delete both hit the real backend.
-- **Visual Workflow Designer** (React Flow) — nine node types (Start, API
-  Request, Variable, Extract Variable, Condition, Transform, Delay, Log,
-  End), drag/connect/delete, zoom/pan/minimap/fit-view, a node
-  configuration panel per type.
-- **Workflow execution engine** — a real interpreter (`server/src/workflow-engine/`)
-  that walks the node graph, makes real HTTP calls for API Request nodes,
-  evaluates Condition nodes with a small safe expression language
-  (`statusCode == 200`, `response.user.active == true`, `userId exists`,
-  etc.), branches on TRUE/FALSE, and passes data between nodes via
-  workflow variables — this is the part of the brief that makes FlowForge
-  more than a Postman clone, and it's genuinely implemented, not stubbed.
-- **API chaining** — Login → Extract Token → an authenticated request all
-  actually works: the extracted value is substituted into the next
-  request's `{{authToken}}` the same way any environment variable would
-  be. Covered end-to-end by `tests/engine.test.js`.
-- **Execution Logs** — every run (and every stopped debug session) is
-  recorded with per-node status, timing, request/response, and output.
-- **Debug Mode** — a genuine paused, resumable execution, not a replay of
-  an already-finished run. The server holds execution state in memory
-  between `/debug/start`, `/debug/:sessionId/step`, and
-  `/debug/:sessionId/stop` calls; clicking **Stop** really does prevent
-  any further node from executing. See limitations for what this doesn't
-  cover (no persistence across a server restart).
-- **Workflow validation** — checked before every run and via an explicit
-  **Validate** button: missing Start/End, broken edges, unconfigured
-  nodes, Condition nodes missing a branch, and circular graphs are all
-  caught with a specific error message, not a generic failure.
-- **Workflow Templates** — Authentication Flow, CRUD Flow, and User
-  Verification all build real, valid node graphs (verified by
-  `tests/templates.test.js`), not just descriptive text.
-- **OpenAPI/Swagger import** — paste or upload a JSON or YAML spec, preview
-  the parsed endpoints, pick which ones to import, and they land as real
-  saved requests in a collection. Supports a documented subset — see
-  limitations for exactly what's covered.
-- **Analytics** — success rate, average response time, requests-over-time,
-  most-used endpoints, and workflow execution outcomes, all from real
-  MongoDB aggregations (`server/src/controllers/analyticsController.js`).
-- **Documentation view** — a clean, read-only rendering of a saved
-  request's method/endpoint/description/params/headers/body. Public
-  sharing isn't built (see limitations), but the view itself is real.
-- **Command palette** (Ctrl/Cmd+K) — jump to any major section from
-  anywhere in the app.
-- Working light/dark theme, toasts, empty states, loading skeletons,
-  confirmation dialogs throughout.
+<p align="center">
 
-## 2. Tech stack
+**React · Node.js · Express · MongoDB · React Flow**
 
-**Frontend:** React 18, Vite, Tailwind CSS, React Router, React Flow,
-Monaco Editor, Recharts, Axios, Lucide icons.
+</p>
 
-**Backend:** Node.js, Express, MongoDB/Mongoose, JWT, bcryptjs, Passport
-(Google OAuth), js-yaml (OpenAPI YAML parsing).
+---
 
-## 3. Architecture
+## ✨ What Makes FlowForge Different?
 
+Most API testing tools focus on individual requests. FlowForge takes things further with a visual workflow engine that lets developers connect multiple API operations and execute them as a single flow.
+
+- 🔗 **Request Chaining** — Pass extracted values, such as authentication tokens, between API requests.
+- 🧩 **Visual Workflow Builder** — Design multi-step API workflows using an interactive drag-and-drop canvas.
+- ⚙️ **Real API Execution** — Send requests to actual endpoints and inspect real responses.
+- 🐛 **Step-by-Step Debugging** — Pause, inspect, resume, and stop workflow execution.
+- 📊 **Execution Analytics** — Track request performance and workflow outcomes using MongoDB aggregations.
+
+> Pink and white SaaS-inspired interface with a focus on usability, functionality, and transparency. No fabricated analytics, mocked API responses, or non-functional controls.
+
+---
+
+## 🚀 Features
+
+### 01. Authentication & Projects
+- Email/password authentication using JWT and bcrypt.
+- Google OAuth integration (requires your own credentials).
+- Forgot and reset password functionality.
+- Protected routes and persistent login.
+- Project-based organization.
+
+### 02. API Testing Workspace
+- Support for GET, POST, PUT, PATCH, DELETE and other HTTP methods.
+- Query parameters, headers and request configuration.
+- Bearer Token, Basic Auth and API Key authentication.
+- JSON, raw, URL-encoded and form-data request bodies.
+- Monaco-powered JSON editor.
+- Real server-side HTTP request execution.
+
+### 03. Response Inspection
+- HTTP status code, response time and response size.
+- Body, Headers, Raw and Preview tabs.
+- Response search and copy functionality.
+- Detailed request and response inspection.
+
+### 04. Collections & Environments
+- Create, organize, rename, duplicate and delete collections.
+- Organize requests using folders.
+- Save requests directly from the API Tester.
+- Create multiple project environments.
+- Resolve dynamic variables using `{{VARIABLE}}`.
+- Switch between active environments.
+
+### 05. Visual Workflow Designer
+
+Build API automation flows through an interactive React Flow canvas.
+
+**Nine supported node types:**
+
+| Node | Purpose |
+|---|---|
+| Start | Entry point of a workflow |
+| API Request | Execute an HTTP request |
+| Variable | Define workflow variables |
+| Extract Variable | Extract values from responses |
+| Condition | Create TRUE/FALSE branches |
+| Transform | Transform workflow data |
+| Delay | Add execution delays |
+| Log | Record execution information |
+| End | Finish workflow execution |
+
+Additional canvas features:
+- Drag, connect and delete nodes.
+- Zoom, pan and fit-to-view.
+- Minimap navigation.
+- Node-specific configuration panels.
+- Workflow validation before execution.
+
+### 06. Workflow Execution Engine
+
+FlowForge includes a dedicated workflow interpreter rather than simply displaying connected nodes.
+
+- Executes API Request nodes using real HTTP calls.
+- Evaluates conditional expressions.
+- Supports TRUE/FALSE branching.
+- Passes data between workflow nodes.
+- Extracts authentication tokens and reuses them in subsequent requests.
+- Records execution output and per-node status.
+
+**Example workflow:**
+
+`Login API → Extract Token → Authenticated API Request`
+
+The extracted token can be passed into the next request using `{{authToken}}`.
+
+### 07. Debug Mode & Execution Logs
+
+- Start a workflow in debug mode.
+- Pause execution between nodes.
+- Inspect individual node outputs.
+- Resume execution one step at a time.
+- Stop execution to prevent subsequent nodes from running.
+- Review request/response details and execution timing.
+
+Debugging uses the same node execution logic as normal workflow runs.
+
+### 08. Analytics Dashboard
+- API success rate.
+- Average response time.
+- Requests over time.
+- Most-used endpoints.
+- Workflow execution outcomes.
+
+All dashboard and analytics metrics are calculated using MongoDB queries and aggregations.
+
+### 09. Additional Capabilities
+- OpenAPI/Swagger JSON and YAML import.
+- Preview and selectively import API endpoints.
+- Saved request documentation view.
+- Workflow starter templates:
+  - Authentication Flow
+  - CRUD Flow
+  - User Verification
+- Command palette (`Ctrl/Cmd + K`).
+- Light and dark themes.
+- Toast notifications, loading skeletons and empty states.
+- Confirmation dialogs.
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Frontend | React 18, Vite |
+| Styling | Tailwind CSS |
+| Routing | React Router |
+| Workflow Canvas | React Flow |
+| Code Editor | Monaco Editor |
+| Charts | Recharts |
+| HTTP Client | Axios |
+| Icons | Lucide |
+| Backend | Node.js, Express.js |
+| Database | MongoDB, Mongoose |
+| Authentication | JWT, bcryptjs, Passport |
+| API Specification | js-yaml |
+
+---
+
+## 🏗️ Architecture
+
+```text
+             FLOWFORGE ARCHITECTURE
+
+       ┌──────────────────────────┐
+       │     React + Vite         │
+       │                          │
+       │  Dashboard & API Tester  │
+       │  Workflow Designer       │
+       │  Analytics & Collections │
+       └────────────┬─────────────┘
+                    │
+                 HTTP/JSON
+                    │
+       ┌────────────▼─────────────┐
+       │      Express Server      │
+       │                          │
+       │  Authentication          │
+       │  Controllers & Services  │
+       │  Request Executor        │
+       │  Workflow Engine         │
+       │  OpenAPI Parser           │
+       └────────────┬─────────────┘
+                    │
+                 Mongoose
+                    │
+       ┌────────────▼─────────────┐
+       │        MongoDB            │
+       │                          │
+       │ Users, Projects           │
+       │ Collections & Requests   │
+       │ Environments & History   │
+       │ Workflows & Executions   │
+       └──────────────────────────┘
 ```
-Client (React/Vite)  ──HTTP/JSON──▶  Server (Express)  ──Mongoose──▶  MongoDB
-     │                                     │
-     ├─ AuthContext / ProjectContext       ├─ controllers/  (request handling)
-     ├─ api/ (axios client + refresh)      ├─ services/     (auth, env resolution,
-     ├─ components/workflow/ (React Flow)  │                 request execution)
-     └─ pages/                             ├─ workflow-engine/ (the interpreter:
-                                            │   engine, nodeExecutors, validate,
-                                            │   conditionEvaluator, debugSessionService,
-                                            │   templates)
-                                            ├─ openapi/ (spec parser)
-                                            ├─ models/
-                                            └─ middleware/ (auth, errors, rate limits)
-```
 
-**Auth:** short-lived access token + longer-lived refresh token. An axios
-response interceptor catches a single 401, refreshes once (single-flight —
-concurrent 401s share one refresh call), and retries.
+### Authentication Architecture
 
-**Workflow execution:** `workflow-engine/engine.js` (full "Run") and
-`workflow-engine/debugSessionService.js` (step-by-step "Debug") both drive
-the exact same `nodeExecutors.executeNode()` and `getNextNode()` functions,
-so a workflow behaves identically whether you run it straight through or
-step through it — there's no separate "debug" code path that could drift
-from what actually runs in production.
+- Short-lived JWT access tokens.
+- Longer-lived refresh tokens.
+- Axios response interceptor for automatic token refresh.
+- Single-flight refresh handling for concurrent unauthorized requests.
 
-## 4. Folder structure
+### Workflow Architecture
 
-```
+Both normal execution and debug execution use the same underlying node execution functions:
+
+- `engine.js`
+- `nodeExecutors.js`
+- `debugSessionService.js`
+- `conditionEvaluator.js`
+- `validate.js`
+
+This keeps workflow behavior consistent across execution modes.
+
+---
+
+## 📂 Project Structure
+
+```text
 flowforge/
-├── client/src/
-│   ├── api/            # axios instance + per-resource calls
-│   ├── components/
-│   │   ├── ui/          apitester/     workflow/       layout/
-│   │   ├── auth/        projects/
-│   ├── context/         # AuthContext, ProjectContext, ToastContext
-│   ├── layouts/         # AppLayout, AuthLayout
-│   └── pages/            Landing, auth/, dashboard/ (Dashboard, Projects,
-│                          ApiTester, Collections, Environments, History,
-│                          Workflows, WorkflowEditor, Analytics, ...)
+│
+├── client/
+│   └── src/
+│       ├── api/
+│       ├── components/
+│       │   ├── ui/
+│       │   ├── apitester/
+│       │   ├── workflow/
+│       │   ├── layout/
+│       │   ├── auth/
+│       │   └── projects/
+│       ├── context/
+│       ├── layouts/
+│       └── pages/
+│
 └── server/
     ├── src/
-    │   ├── config/            env, db, passport
-    │   ├── controllers/       auth, user, project, dashboard, collection,
-    │   │                      request, environment, history, workflow,
-    │   │                      debug, execution, analytics, openapi
-    │   ├── middleware/        auth, error handling, rate limiting, validation
-    │   ├── models/            User, Project, Collection, ApiRequest,
-    │   │                      Environment, RequestHistory, Workflow, Execution
+    │   ├── config/
+    │   ├── controllers/
+    │   ├── middleware/
+    │   ├── models/
     │   ├── routes/
-    │   ├── services/          authService, environmentService,
-    │   │                      requestExecutorService
-    │   ├── workflow-engine/   engine, nodeExecutors, validate,
-    │   │                      conditionEvaluator, debugSessionService,
-    │   │                      templates, pathUtils
-    │   ├── openapi/           parser
-    │   └── utils/             ApiError, tokens, urlSafety (SSRF), validators
-    └── tests/                 87 Jest tests — see section 9
+    │   ├── services/
+    │   ├── workflow-engine/
+    │   ├── openapi/
+    │   └── utils/
+    │
+    └── tests/
 ```
 
-## 5. Installation
+---
 
-Requires Node.js 18+ and a MongoDB instance (local or Atlas).
+## 💻 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- MongoDB (local installation or MongoDB Atlas)
+- npm
+
+### 1. Clone the repository
 
 ```bash
-# Backend
+git clone <YOUR_REPOSITORY_URL>
+cd flowforge
+```
+
+### 2. Configure the backend
+
+```bash
 cd server
 npm install
-cp .env.example .env    # then edit — see section 6
-
-# Frontend
-cd ../client
-npm install
-cp .env.example .env    # defaults to http://localhost:5000/api
+cp .env.example .env
 ```
 
-## 6. Environment variables
+Configure the environment variables in `server/.env`.
 
-### `server/.env`
-
-| Variable | Required | Notes |
-|---|---|---|
-| `MONGODB_URI` | Yes | Local (`mongodb://127.0.0.1:27017/flowforge`) or Atlas connection string |
-| `JWT_SECRET` / `JWT_REFRESH_SECRET` | Yes | Generate with `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
-| `JWT_EXPIRES_IN` / `JWT_REFRESH_EXPIRES_IN` | No | Default `7d` / `30d` |
-| `CLIENT_URL` | Yes | For CORS + OAuth redirects, e.g. `http://localhost:5173` |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_CALLBACK_URL` | No | Leave blank to disable Google sign-in |
-| `EXECUTOR_BLOCK_PRIVATE_NETWORKS` | No | Default `true` — SSRF protection, see section 10 |
-| `EXECUTOR_TIMEOUT_MS` | No | Default `15000` |
-| `EXECUTOR_MAX_RESPONSE_BYTES` | No | Default `5000000` |
-
-### `client/.env`
-
-| Variable | Required | Notes |
-|---|---|---|
-| `VITE_API_URL` | Yes | Backend base URL, e.g. `http://localhost:5000/api` |
-
-Never commit a real `.env` — only `.env.example` is checked in.
-
-## 7. Google OAuth setup
-
-I did not invent or embed any credentials — create your own:
-
-1. [Google Cloud Console](https://console.cloud.google.com/) → create/select
-   a project.
-2. **APIs & Services → OAuth consent screen** — configure it (External is
-   fine for testing); add your email as a test user if unpublished.
-3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**
-   → Application type **Web application**.
-4. Authorized redirect URI: `http://localhost:5000/api/auth/google/callback`
-   (must exactly match `GOOGLE_CALLBACK_URL`).
-5. Put the Client ID/Secret into `server/.env`, restart the server.
-
-Without these, email/password auth works fully and the Google button stays
-visibly disabled with an explanatory tooltip — it never pretends to work
-(`GET /api/auth/google/status` is what the frontend checks).
-
-## 8. Local development
+### 3. Configure the frontend
 
 ```bash
-# Terminal 1
-cd server && npm run dev     # http://localhost:5000
-
-# Terminal 2
-cd client && npm run dev     # http://localhost:5173
+cd ../client
+npm install
+cp .env.example .env
 ```
 
-No root-level combined dev script exists in this build — see limitations.
+Set the frontend API URL:
 
-## 9. Testing
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 4. Configure the backend environment
+
+```env
+MONGODB_URI=mongodb://127.0.0.1:27017/flowforge
+
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+
+CLIENT_URL=http://localhost:5173
+
+EXECUTOR_BLOCK_PRIVATE_NETWORKS=true
+EXECUTOR_TIMEOUT_MS=15000
+EXECUTOR_MAX_RESPONSE_BYTES=5000000
+```
+
+Google OAuth variables are optional. See the Google OAuth setup section below.
+
+### 5. Run the application
+
+**Terminal 1 — Backend**
+
+```bash
+cd server
+npm run dev
+```
+
+**Terminal 2 — Frontend**
+
+```bash
+cd client
+npm run dev
+```
+
+Frontend: `http://localhost:5173`
+
+Backend: `http://localhost:5000`
+
+---
+
+## 🔐 Google OAuth Setup
+
+Google sign-in requires your own OAuth credentials.
+
+1. Open [Google Cloud Console](https://console.cloud.google.com/).
+2. Create or select a project.
+3. Configure the OAuth consent screen.
+4. Create an OAuth Client ID for a Web Application.
+5. Add the authorized redirect URI:
+
+```text
+http://localhost:5000/api/auth/google/callback
+```
+
+6. Add your credentials to `server/.env`:
+
+```env
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+```
+
+Without credentials, Google sign-in remains visibly disabled. Email/password authentication is available independently.
+
+---
+
+## 🧪 Testing
+
+FlowForge includes **87 Jest backend tests**, covering:
+
+- Authentication and access control.
+- SSRF protection and redirect guard.
+- Request configuration and execution setup.
+- Environment variable resolution.
+- Conditional expression evaluation.
+- Workflow graph validation and cycle detection.
+- Workflow execution and API chaining.
+- TRUE/FALSE conditional branching.
+- Starter workflow templates.
+- OpenAPI specification parsing.
+
+Run the test suite:
 
 ```bash
 cd server
 npm test
 ```
 
-87 Jest tests, all passing as of this build, covering:
-- SSRF protection and the redirect guard (`urlSafety.test.js`, `redirectGuard.test.js`)
-- Environment variable resolution (`environmentService.test.js`)
-- Request-config building — params/headers/auth/body (`requestExecutorService.test.js`)
-- Auth validation and access control (`auth.test.js`)
-- The condition expression language (`conditionEvaluator.test.js`)
-- Dot-path resolution (`pathUtils.test.js`)
-- Workflow graph validation, including cycle detection (`workflowValidate.test.js`)
-- **The full workflow engine end-to-end**, with a mocked HTTP layer —
-  chaining a login → extract token → authenticated request, TRUE/FALSE
-  branching, a failing API node stopping the workflow, and more
-  (`engine.test.js`)
-- Every starter template actually passes its own validation (`templates.test.js`)
-- The OpenAPI parser against a real sample spec (`openapiParser.test.js`)
+<sub>All 87 tests passed in the reported build. Live MongoDB CRUD and real outbound HTTP execution still require integration testing against actual infrastructure. The frontend does not currently have an automated test suite.</sub>
 
-What isn't tested: anything requiring a live MongoDB connection or a real
-outbound HTTP call to a public API — this sandbox had neither (see
-limitations). CRUD controller logic is covered by code review, not
-execution, so please run through registration → project → request →
-workflow once against your own MongoDB before relying on it.
+---
 
-There is no frontend automated test suite in this build.
+## 🛡️ Security
 
-## 10. Security notes
+Security is an important part of FlowForge's request execution architecture.
 
-- Passwords hashed with bcrypt (cost 12); never logged or stored in plaintext.
-- Short-lived JWT access tokens, longer-lived refresh tokens exchanged only
-  via `/auth/refresh`.
-- `helmet`, CORS locked to `CLIENT_URL`, general + auth + executor rate
-  limiters (`middleware/rateLimiter.js`).
-- Password reset tokens are emailed as a raw value but stored only as a
-  SHA-256 hash with a 1-hour expiry.
-- **SSRF protection** on the request executor (`utils/urlSafety.js`,
-  `services/requestExecutorService.js`), on by default:
-  - Blocks private/reserved IPv4 ranges (RFC1918, loopback, link-local —
-    including the `169.254.169.254` cloud metadata address — CGNAT,
-    multicast, reserved) and the IPv6 equivalents.
-  - Blocks `localhost` and any `*.local` hostname.
-  - Resolves other hostnames via DNS and checks every returned address.
-  - Rejects non-`http(s)` protocols.
-  - **Documented limitation:** the redirect guard (`beforeRedirect`) is
-    synchronous, so it can only catch a redirect whose target is an IP
-    literal or `localhost`/`.local` — it cannot re-run the async DNS
-    lookup per hop. A malicious server could still redirect to a hostname
-    that resolves to a private IP without being caught. Pinned exactly by
-    `tests/redirectGuard.test.js`.
-  - Request timeout and response-size cap are enforced
-    (`EXECUTOR_TIMEOUT_MS`, `EXECUTOR_MAX_RESPONSE_BYTES`).
-- The workflow engine reuses the same executor, so the same SSRF
-  protections apply to API Request nodes inside a workflow.
-- Debug sessions live in server memory only (`workflow-engine/debugSessionService.js`),
-  expire after 15 minutes, and are strictly owner-checked — but they will
-  not survive a server restart and won't work correctly behind a
-  load-balanced multi-instance deployment without sticky sessions.
+- Password hashing with bcrypt (cost factor 12).
+- JWT-based authentication and refresh tokens.
+- Helmet security headers.
+- CORS configuration.
+- Authentication, general and executor rate limiting.
+- Hashed password-reset tokens with expiration.
+- Request timeout and response-size restrictions.
+- SSRF protection against private and reserved network addresses.
+- DNS resolution checks before outbound requests.
+- HTTP/HTTPS protocol restrictions.
 
-## 11. Known limitations
+**Note:** Redirect validation has a documented limitation for hostname-based redirects resolving to private IP addresses. See Known Limitations.
 
-Called out here (and in-app, where relevant) rather than hidden:
+---
 
-- **Verified without live infrastructure.** This was built in a sandbox
-  with no reachable MongoDB and no general internet access (only an
-  npm/package-registry allowlist). That means: DB-backed CRUD is verified
-  by code review, not live execution; a real outbound HTTP call
-  (`executeRequest`'s success path against, say, `https://httpbin.org/get`)
-  has not actually been made — the request-building and error-handling
-  logic around it is unit-tested with mocks, but test it against a real
-  API once you have this running with real infrastructure.
-- **OAuth 2 auth type** in the API Tester and workflow API Request nodes is
-  UI/schema only — no token-acquisition flow runs behind it. The UI says
-  so explicitly rather than pretending. Use Bearer Token with a manually
-  obtained access token instead.
-- **Debug Mode sessions** are in-memory, not persisted — see Security notes.
-- **Redirect SSRF guard** only catches IP-literal/localhost redirect
-  targets synchronously, not hostname-based ones that resolve to private
-  IPs — see Security notes.
-- **OpenAPI import** supports a documented subset: paths, methods,
-  query/header parameters, and JSON request bodies with a best-effort
-  example generated from the schema. Path parameters (`{id}`) are left
-  inline rather than auto-converted to `{{id}}`; security schemes,
-  `oneOf`/`anyOf`/`allOf` schemas, and external `$ref`s are not handled.
-- **Public documentation sharing** (an unauthenticated `/docs/:id` page) is
-  not built — the Documentation view exists but is only visible to the
-  request's owner, as the view itself states.
-- **No undo/redo** in the workflow designer (the brief marks this
-  "if practical" — it wasn't, given everything else in scope).
-- **No root-level script** to run both frontend and backend together —
-  run the two `npm run dev` commands separately.
-- **No frontend automated tests.**
-- The production client bundle is a single ~890KB (263KB gzipped) chunk —
-  Monaco and React Flow are both sizeable libraries. Code-splitting them
-  behind `React.lazy` (only loading Monaco when the API Tester or a
-  workflow's API Request panel is open, React Flow only on the workflow
-  editor route) would meaningfully cut initial load time; not done here.
+## ⚠️ Known Limitations
 
-## 12. Production deployment
+FlowForge is built with transparency in mind. Features that are incomplete are documented rather than presented as fully functional.
 
-- **Frontend → Vercel:** project root `client/`, build command
-  `npm run build`, output directory `dist`, set `VITE_API_URL` to your
-  deployed backend's URL.
-- **Backend → Render (or any Node host):** project root `server/`, start
-  command `npm start`, set every variable from `server/.env.example` in
-  the platform's environment settings, update `GOOGLE_CALLBACK_URL` and
-  `CLIENT_URL` to production URLs.
-- **Database → MongoDB Atlas:** allow your deployment platform's outbound
-  IPs (or `0.0.0.0/0` for a simple portfolio deployment) in Atlas's
-  network access settings.
-- If you run more than one backend instance behind a load balancer,
-  Debug Mode sessions will misbehave without sticky sessions (see
-  limitations) — fine for a single-instance deployment.
+| Feature | Current Status |
+|---|---|
+| OAuth 2 token acquisition | UI/schema only |
+| Debug session persistence | In-memory only |
+| Public documentation sharing | Not implemented |
+| Workflow undo/redo | Not implemented |
+| Frontend automated tests | Not available |
+| Root-level combined dev script | Not available |
+| Redirect DNS re-validation | Limited |
+| OpenAPI import | Supports a documented subset |
+| Live MongoDB integration tests | Not performed in the build environment |
+| Real outbound API integration tests | Not performed in the build environment |
 
-## 13. API reference
+Additional details:
 
-All routes are prefixed with `/api`; `Bearer` means `Authorization: Bearer <token>` is required.
+- OAuth 2 authentication does not acquire tokens automatically. Bearer Token authentication with a manually obtained token is supported.
+- Debug sessions expire after 15 minutes and do not survive server restarts.
+- Public documentation sharing is not available; saved request documentation is owner-only.
+- OpenAPI import currently supports paths, methods, query/header parameters and JSON request bodies with limitations around references and complex schemas.
+- The redirect guard does not perform asynchronous DNS re-validation on every redirect hop.
+- The frontend production bundle is approximately 890 KB (263 KB gzipped). Code splitting Monaco and React Flow is a potential improvement.
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| POST | `/auth/register` \| `/auth/login` \| `/auth/refresh` | – | Auth |
-| GET | `/auth/me` | Bearer | Current user |
-| POST | `/auth/forgot-password` \| `/auth/reset-password` | – | Password reset |
-| GET | `/auth/google` \| `/auth/google/callback` \| `/auth/google/status` | – | Google OAuth |
-| GET / PATCH | `/users/me` | Bearer | Profile |
-| POST | `/users/me/change-password` | Bearer | Change password |
-| GET / POST / PATCH / DELETE | `/projects[/:id]` | Bearer | Project CRUD |
-| GET | `/dashboard/summary` | Bearer | Real aggregated stats |
-| GET / POST / PATCH / DELETE | `/collections[/:id]` | Bearer | Collections + folders |
-| GET / POST / PATCH / DELETE | `/requests[/:id]` | Bearer | Saved requests |
-| POST | `/requests/execute` | Bearer | **Real HTTP execution** + history |
-| GET / POST / PATCH / DELETE | `/environments[/:id]` | Bearer | Environments |
-| POST | `/environments/:id/activate` | Bearer | Set active environment |
-| GET / DELETE | `/history[/:id]` | Bearer | Request history |
-| POST | `/history/:id/rerun` | Bearer | Re-execute a past request |
-| GET / POST / PATCH / DELETE | `/workflows[/:id]` | Bearer | Workflow CRUD |
-| GET | `/workflows/templates` | Bearer | Starter templates |
-| GET | `/workflows/:id/validate` | Bearer | Validate without running |
-| POST | `/workflows/:id/run` | Bearer | **Full real execution** |
-| POST | `/workflows/:id/debug/start` \| `/debug/:sessionId/step` \| `/debug/:sessionId/stop` | Bearer | Step-by-step debug |
-| GET | `/executions[/:id]` | Bearer | Execution logs |
-| GET | `/analytics?project=` | Bearer | Real aggregated analytics |
-| POST | `/openapi/parse` | Bearer | Preview an OpenAPI/Swagger spec |
-| POST | `/openapi/import` | Bearer | Import selected endpoints as requests |
-| GET | `/health` | – | Liveness check |
+---
 
-Responses follow `{ success, data }` or `{ success: false, message, details? }`.
+## 🌐 Production Deployment
 
-## 14. Future improvements
+| Component | Recommended Platform |
+|---|---|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | MongoDB Atlas |
 
-Real-time execution progress over WebSockets/SSE instead of the current
-synchronous run + step model; team/workspace sharing and permissions;
-public documentation sharing; a transactional email provider so password
-reset doesn't rely on the dev-mode direct link; OAuth 2 token acquisition;
-code-splitting Monaco/React Flow; a frontend test suite; persisting Debug
-Mode sessions somewhere shared (Redis) instead of in-process memory.
+**Frontend**
+- Root directory: `client/`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Configure `VITE_API_URL` with your deployed backend URL.
+
+**Backend**
+- Root directory: `server/`
+- Start command: `npm start`
+- Configure production environment variables.
+- Update CORS and Google OAuth callback URLs.
+
+**Database**
+- Configure MongoDB Atlas connectivity and network access for your backend host.
+
+---
+
+## 🔌 API Reference
+
+All routes use the `/api` prefix.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/register` | Register |
+| POST | `/auth/login` | Login |
+| POST | `/auth/refresh` | Refresh token |
+| GET | `/auth/me` | Current user |
+| POST | `/auth/forgot-password` | Forgot password |
+| POST | `/auth/reset-password` | Reset password |
+| GET / PATCH | `/users/me` | User profile |
+| POST | `/users/me/change-password` | Change password |
+| GET / POST / PATCH / DELETE | `/projects` | Project management |
+| GET | `/dashboard/summary` | Dashboard metrics |
+| GET / POST / PATCH / DELETE | `/collections` | Collection management |
+| GET / POST / PATCH / DELETE | `/requests` | Saved requests |
+| POST | `/requests/execute` | Execute API request |
+| GET / POST / PATCH / DELETE | `/environments` | Environment management |
+| GET / DELETE | `/history` | Request history |
+| POST | `/history/:id/rerun` | Re-run request |
+| GET / POST / PATCH / DELETE | `/workflows` | Workflow management |
+| GET | `/workflows/templates` | Workflow templates |
+| GET | `/workflows/:id/validate` | Validate workflow |
+| POST | `/workflows/:id/run` | Execute workflow |
+| POST | `/workflows/:id/debug/start` | Start debugging |
+| POST | `/debug/:sessionId/step` | Execute next step |
+| POST | `/debug/:sessionId/stop` | Stop debugging |
+| GET | `/executions` | Execution logs |
+| GET | `/analytics` | Analytics data |
+| POST | `/openapi/parse` | Parse API specification |
+| POST | `/openapi/import` | Import endpoints |
+| GET | `/health` | Health check |
+
+---
+
+## 🔮 Future Improvements
+
+Planned areas for further development:
+
+- Real-time execution updates using WebSockets or SSE.
+- Team workspaces and collaboration.
+- Public API documentation sharing.
+- Automated OAuth 2 token acquisition.
+- Persistent debug sessions using Redis.
+- Frontend automated testing.
+- Code splitting for faster initial loading.
+- Improved OpenAPI schema and reference support.
+
+---
+
+## 💡 Project Highlights
+
+| Area | Implementation |
+|---|---|
+| API Execution | Server-side HTTP execution |
+| Workflow Automation | Custom graph interpreter |
+| Request Chaining | Variable extraction and substitution |
+| Debugging | Paused and resumable execution |
+| Analytics | MongoDB aggregations |
+| Security | JWT, bcrypt and SSRF protection |
+| Testing | 87 backend Jest tests |
+
+---
+
+<p align="center">
+
+### Built to make API development more visual, connected, and transparent.
+
+**FLOWFORGE ⚡**
+
+*Design workflows. Execute requests. Debug with confidence.*
+
+</p>
